@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Colloquium</title>
+  <link rel="shortcut icon" href="UAfavicon.ico">
+  <link rel="stylesheet" href="seminar.css">
+  <meta name="author" content="Marco Varisco">
+  <meta name="description" content="Math Colloquium, University at Albany, State University of New York.">
+  <meta name="keywords" content="colloquium, math, mathematics">
+</head>
+
+<body>
+<div id="wrap">
+
+<div id="masthead">
+<p>
+  <a href="https://www.albany.edu/"><img alt="University at Albany, State University of New York" src="UAlogo.png"></a>
+</p>
+<p>
+  <a href="https://www.albany.edu/cas">College of Arts and&nbsp;Sciences</a><br>
+  <a href="https://www.albany.edu/math">Department of Mathematics and&nbsp;Statistics</a>
+</p>
+</div>
+
+<h1><a href="./">Colloquium</a></h1>
+
+<div id="side">
+<h2 class="noprint">Semesters</h2>
+<p class="noprint semesters">
+  <a href="index-23-3.html">Spring 2023</a><br>
+  <a href="index.html">Fall 2022</a><br>
+  <a href="https://www.albany.edu/math/colloquia-and-seminars/past-colloquia">Older</a>
+</p>
+<h2 class="noprint"><a href="stats.html">Statistics</a></h2>
+</div>
+
+<div id="main">
+<form>
+  <label for="query">Search:</label>
+  <input type="search" id="query" name="query" spellcheck="false" size="24" autofocus>
+  <button>&#x1F50D;</button>
+</form>
+<div id="output"></div>
+</div>
+
+<div id="footer">
+<p>
+  Updated <time datetime="2022-10-19">October&nbsp;19, 2022</time><br>
+  <a href="mailto:mlesnick@albany.edu?subject=subscribe&body=Please%20add%20me%20to%20the%20Colloquium%20email%20list.">Subscribe to email announcements</a>
+</p>
+</div>
+
+</div>
+
+<script>
+   const talks = [
+     ["2022-10-14","Kush R. Varshney","Thomas J. Watson Research Center, IBM","On the Intersection of Machine Learning and Society","https://researcher.watson.ibm.com/researcher/view.php?person=us-krvarshn","221014%20colloquium.pdf"],
+     ["2022-10-21","Laurent Saloff-Coste","Cornell University","The Multiplayer Gambler’s Ruin Problem","https://math.cornell.edu/laurent-saloff-coste","221021%20colloquium.pdf"],
+     ["2022-11-04","Karin Reinhold","UAlbany","&nbsp;","https://www.albany.edu/~reinhold/",""],
+     ["2022-11-18","Changlong Zhong","UAlbany","&nbsp;","https://www.albany.edu/~cz954339/",""],
+     ["2022-12-02","Sheldon Axler","San Francisco State University","&nbsp;","https://www.axler.net",""],
+     ["2023-02-17","Matt Zaremsky","UAlbany","&nbsp;","https://www.albany.edu/~mz498674/",""],
+     ["2023-03-24","Penghang Yin","UAlbany","&nbsp;","https://www.albany.edu/math/faculty/penghang-yin",""],
+  ];
+  const dateOptions = { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" };
+  document.addEventListener("submit", (event) => {
+    let query = document.getElementById("query").value.trim().replace(/\s+/g, "|");
+    let results;
+    let output = "";
+    let csv = "";
+    if (query) {
+      query = new RegExp(query, "gi");
+      results = talks.filter((e) => e.slice(1,4).join(" ").match(query)).map((e) => {
+        csv += `"${e[0]}","${e[1]}","${e[2]}","${e[3]}","${e[4]}","${e[5] ? "https://albanymath.github.io/coll/pdf/"+e[5] : ""}"\n`;
+        const date   = new Date(e[0]);
+        const dateUS = new Intl.DateTimeFormat("en-US", dateOptions).format(date);
+        const index  = `index-${dateUS.slice(-2)}-${date.getMonth()<7 ? 3 : 9}.html`;
+        const author = e[4] ? `<a href=    "${e[4]}">${e[1]}</a>` : e[1];
+        const title  = e[5] ? `<a href="pdf/${e[5]}">${e[3]}</a>` : e[3];
+        const affil  = (e[2] && e[2]!=="UAlbany") ? ` (${e[2]})` : "";
+        return `<dt><a href="${index}">${dateUS}</a></dt><dd>${author}${affil}</dd><dd>${title}</dd>`;
+      });
+      if (results.length) {
+        csv = URL.createObjectURL(new Blob(["Date,Speaker,Affiliation,Title,URL,PDF\n" + csv], { type: "text/csv" }));
+        output += `<h2><a href="${csv}" download="results.csv">${results.length} Result${results.length===1 ? "" : "s"}</a></h2><dl>${results.join("")}</dl>`;
+      } else {
+        output += "<h2>No Results</h2>";
+      }
+    }
+    document.getElementById("output").innerHTML = output;
+    event.preventDefault();
+  });
+</script>
+</body>
+</html>
